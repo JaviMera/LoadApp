@@ -27,8 +27,6 @@ class LoadingButton @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        val paint = Paint()
-        canvas?.drawText("Download", 0f, 0f, paint)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

@@ -9,12 +9,17 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import com.udacity.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.content_main.view.*
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
 
     private var downloadID: Long = 0
 
@@ -24,7 +29,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setSupportActionBar(toolbar)
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
@@ -32,6 +38,8 @@ class MainActivity : AppCompatActivity() {
         custom_button.setOnClickListener {
             download()
         }
+
+        binding.root.radio_button_glide_download.setOnClickListener { Toast.makeText(this, "sup", Toast.LENGTH_SHORT).show() }
     }
 
     private val receiver = object : BroadcastReceiver() {
@@ -52,6 +60,8 @@ class MainActivity : AppCompatActivity() {
         val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         downloadID =
             downloadManager.enqueue(request)// enqueue puts the download request in the queue.
+
+        Toast.makeText(this, downloadID.toString(), Toast.LENGTH_SHORT).show()
     }
 
     companion object {
