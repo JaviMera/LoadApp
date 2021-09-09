@@ -3,6 +3,7 @@ package com.udacity
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import kotlin.properties.Delegates
@@ -21,13 +22,13 @@ class LoadingButton @JvmOverloads constructor(
 
 
     init {
-
     }
 
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-
+        val paint = Paint()
+        canvas?.drawText("Download", 0f, 0f, paint)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
