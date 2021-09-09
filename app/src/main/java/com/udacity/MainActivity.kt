@@ -38,8 +38,6 @@ class MainActivity : AppCompatActivity() {
         custom_button.setOnClickListener {
             download()
         }
-
-        binding.root.radio_button_glide_download.setOnClickListener { Toast.makeText(this, "sup", Toast.LENGTH_SHORT).show() }
     }
 
     private val receiver = object : BroadcastReceiver() {
