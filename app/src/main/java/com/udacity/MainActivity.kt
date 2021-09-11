@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                             DownloadManager.STATUS_FAILED -> detailActivityIntent.putExtra(getString(
                                 R.string.downloaded_file_status_key), getString(R.string.downloaded_file_fail))
                         }
-                        putExtra(getString(R.string.downloaded_file_name_key), cursor.getString(descriptionColumn))
+                        putExtra(getString(R.string.downloaded_file_name_key), getString(R.string.radio_button_retrofit_download_text))
                     }
 
                     val builder = NotificationCompat.Builder(baseContext, CHANNEL_ID)
@@ -98,12 +98,12 @@ class MainActivity : AppCompatActivity() {
                         .setContentTitle("Udacity: Android Kotlin Nanodegree")
                         .setContentText("The $title is downloaded")
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setAutoCancel(true)
                         .addAction(
                             R.drawable.ic_assistant_black_24dp,
                             "Check Status",
                             PendingIntent.getActivity(baseContext, 0, detailActivityIntent, FLAG_ONE_SHOT)
                         )
+                        .setAutoCancel(true)
 
                     val notificationManager = getSystemService(NotificationManager::class.java)
                     notificationManager.notify(NOTIFICATION_ID, builder.build())

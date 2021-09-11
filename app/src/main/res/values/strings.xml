@@ -18,4 +18,6 @@
     <string name="downloaded_file_successful">Successful</string>
     <string name="downloaded_file_fail">Fail</string>
     <string name="downloaded_file_name_key">FILE_NAME</string>
+    <string name="detail_file_name">File name:</string>
+    <string name="detail_status">Status:</string>
 </resources>

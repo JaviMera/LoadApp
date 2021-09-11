@@ -1,13 +1,10 @@
 package com.udacity
 
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.udacity.databinding.ActivityDetailBinding
 import kotlinx.android.synthetic.main.activity_detail.*
 import kotlinx.android.synthetic.main.content_detail.view.*
-import timber.log.Timber
 
 class DetailActivity : AppCompatActivity() {
 
@@ -19,7 +16,9 @@ class DetailActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(toolbar)
 
-        val status = intent.extras?.getString(getString(R.string.downloaded_file_status_key))
-        binding.root.status_value.text = status
+        intent.extras?.let{
+            binding.root.file_name_value.text = it.getString(getString(R.string.downloaded_file_name_key))
+            binding.root.file_status_value.text = it.getString(getString(R.string.downloaded_file_status_key))
+        }
     }
 }
