@@ -1,12 +1,15 @@
 package com.udacity
 
 import android.app.DownloadManager
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_ONE_SHOT
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -16,7 +19,6 @@ import androidx.core.app.NotificationCompat
 import com.udacity.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.android.synthetic.main.content_main.view.*
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -45,6 +47,20 @@ class MainActivity : AppCompatActivity() {
         custom_button.setOnClickListener {
             download()
         }
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+
+            val notificationChannel = NotificationChannel(CHANNEL_ID, "File Downloader", NotificationManager.IMPORTANCE_HIGH).apply {
+                setShowBadge(false)
+                enableLights(true)
+                lightColor = Color.RED
+                enableVibration(true)
+                description = getString(R.string.app_name)
+            }
+
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
     }
 
     private val receiver = object : BroadcastReceiver() {
@@ -59,6 +75,41 @@ class MainActivity : AppCompatActivity() {
 
                 if(cursor.moveToFirst()){
                     Timber.i("Attempting to query downloaded file.")
+
+                    val statusColumn = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+
+                    if(DownloadManager.STATUS_SUCCESSFUL == cursor.getInt(statusColumn)){
+
+                        Timber.i("Status: Successful")
+                        val titleColumn = cursor.getColumnIndex(DownloadManager.COLUMN_TITLE)
+                        val descriptionColumn = cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION)
+                        val title = cursor.getString(titleColumn)
+                        val description = cursor.getString(descriptionColumn)
+
+                        Timber.i("Title: $title")
+                        Timber.i("Description: $description")
+
+                        val intent = Intent(baseContext, DetailActivity::class.java).apply {
+                            putExtra("STATUS", "Successful")
+                        }
+
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+
+                            val builder = NotificationCompat.Builder(baseContext, CHANNEL_ID)
+                                .setSmallIcon(R.drawable.ic_assistant_black_24dp)
+                                .setContentTitle("Udacity: Android Kotlin Nanodegree")
+                                .setContentText("The $title is downloaded")
+                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setAutoCancel(true)
+                                .addAction(R.drawable.ic_assistant_black_24dp, "Check Status", PendingIntent.getActivity(baseContext, 0, intent, FLAG_ONE_SHOT))
+
+                            val notificationManager = getSystemService(NotificationManager::class.java)
+                            notificationManager.notify(NOTIFICATION_ID,builder.build())
+                        }
+
+                    }else {
+                        Timber.i("Status: Unsuccessful")
+                    }
                 } else{
                     Timber.i("There is nothing in the cursor to query.")
                 }
@@ -85,7 +136,8 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val URL =
             "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
-        private const val CHANNEL_ID = "channelId"
+        private const val CHANNEL_ID = "download_file_channel_id"
+        private const val NOTIFICATION_ID = 1
     }
 
 }
