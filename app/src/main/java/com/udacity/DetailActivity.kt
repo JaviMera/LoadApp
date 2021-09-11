@@ -1,5 +1,6 @@
 package com.udacity
 
+import android.app.NotificationManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.udacity.databinding.ActivityDetailBinding
@@ -19,6 +20,9 @@ class DetailActivity : AppCompatActivity() {
         intent.extras?.let{
             binding.root.file_name_value.text = it.getString(getString(R.string.downloaded_file_name_key))
             binding.root.file_status_value.text = it.getString(getString(R.string.downloaded_file_status_key))
+
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager.cancel(it.getInt(getString(R.string.notification_id)))
         }
     }
 }

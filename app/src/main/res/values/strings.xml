@@ -20,4 +20,5 @@
     <string name="downloaded_file_name_key">FILE_NAME</string>
     <string name="detail_file_name">File name:</string>
     <string name="detail_status">Status:</string>
+    <string name="notification_id">NOTIFICATION_ID</string>
 </resources>

@@ -79,7 +79,6 @@ class MainActivity : AppCompatActivity() {
                     val detailActivityIntent = Intent(baseContext, DetailActivity::class.java)
 
                     val titleColumn = cursor.getColumnIndex(DownloadManager.COLUMN_TITLE)
-                    val descriptionColumn = cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION)
                     val title = cursor.getString(titleColumn)
 
                     with(detailActivityIntent) {
@@ -91,6 +90,7 @@ class MainActivity : AppCompatActivity() {
                                 R.string.downloaded_file_status_key), getString(R.string.downloaded_file_fail))
                         }
                         putExtra(getString(R.string.downloaded_file_name_key), getString(R.string.radio_button_retrofit_download_text))
+                        putExtra(getString(R.string.notification_id), NOTIFICATION_ID)
                     }
 
                     val builder = NotificationCompat.Builder(baseContext, CHANNEL_ID)
@@ -103,7 +103,6 @@ class MainActivity : AppCompatActivity() {
                             "Check Status",
                             PendingIntent.getActivity(baseContext, 0, detailActivityIntent, FLAG_ONE_SHOT)
                         )
-                        .setAutoCancel(true)
 
                     val notificationManager = getSystemService(NotificationManager::class.java)
                     notificationManager.notify(NOTIFICATION_ID, builder.build())
