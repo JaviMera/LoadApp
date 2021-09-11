@@ -19,7 +19,7 @@ class DetailActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(toolbar)
 
-        val status = intent.extras?.getString("STATUS")
+        val status = intent.extras?.getString(getString(R.string.downloaded_file_status_key))
         binding.root.status_value.text = status
     }
 }

@@ -74,42 +74,40 @@ class MainActivity : AppCompatActivity() {
                 val cursor = downloadManager.query(query)
 
                 if(cursor.moveToFirst()){
-                    Timber.i("Attempting to query downloaded file.")
 
                     val statusColumn = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                    val detailActivityIntent = Intent(baseContext, DetailActivity::class.java)
 
-                    if(DownloadManager.STATUS_SUCCESSFUL == cursor.getInt(statusColumn)){
+                    val titleColumn = cursor.getColumnIndex(DownloadManager.COLUMN_TITLE)
+                    val descriptionColumn = cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION)
+                    val title = cursor.getString(titleColumn)
 
-                        Timber.i("Status: Successful")
-                        val titleColumn = cursor.getColumnIndex(DownloadManager.COLUMN_TITLE)
-                        val descriptionColumn = cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION)
-                        val title = cursor.getString(titleColumn)
-                        val description = cursor.getString(descriptionColumn)
-
-                        Timber.i("Title: $title")
-                        Timber.i("Description: $description")
-
-                        val intent = Intent(baseContext, DetailActivity::class.java).apply {
-                            putExtra("STATUS", "Successful")
+                    with(detailActivityIntent) {
+                        when(cursor.getInt(statusColumn)){
+                            DownloadManager.STATUS_SUCCESSFUL -> detailActivityIntent.putExtra(getString(
+                                                            R.string.downloaded_file_status_key), getString(
+                                                                                            R.string.downloaded_file_successful))
+                            DownloadManager.STATUS_FAILED -> detailActivityIntent.putExtra(getString(
+                                R.string.downloaded_file_status_key), getString(R.string.downloaded_file_fail))
                         }
-
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-
-                            val builder = NotificationCompat.Builder(baseContext, CHANNEL_ID)
-                                .setSmallIcon(R.drawable.ic_assistant_black_24dp)
-                                .setContentTitle("Udacity: Android Kotlin Nanodegree")
-                                .setContentText("The $title is downloaded")
-                                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                .setAutoCancel(true)
-                                .addAction(R.drawable.ic_assistant_black_24dp, "Check Status", PendingIntent.getActivity(baseContext, 0, intent, FLAG_ONE_SHOT))
-
-                            val notificationManager = getSystemService(NotificationManager::class.java)
-                            notificationManager.notify(NOTIFICATION_ID,builder.build())
-                        }
-
-                    }else {
-                        Timber.i("Status: Unsuccessful")
+                        putExtra(getString(R.string.downloaded_file_name_key), cursor.getString(descriptionColumn))
                     }
+
+                    val builder = NotificationCompat.Builder(baseContext, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_assistant_black_24dp)
+                        .setContentTitle("Udacity: Android Kotlin Nanodegree")
+                        .setContentText("The $title is downloaded")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setAutoCancel(true)
+                        .addAction(
+                            R.drawable.ic_assistant_black_24dp,
+                            "Check Status",
+                            PendingIntent.getActivity(baseContext, 0, detailActivityIntent, FLAG_ONE_SHOT)
+                        )
+
+                    val notificationManager = getSystemService(NotificationManager::class.java)
+                    notificationManager.notify(NOTIFICATION_ID, builder.build())
+
                 } else{
                     Timber.i("There is nothing in the cursor to query.")
                 }
