@@ -105,12 +105,8 @@ class MainActivity : AppCompatActivity() {
                             }
                             putExtra(
                                 getString(R.string.downloaded_file_name_key),
-                                when(binding.root.radio_group.checkedRadioButtonId){
-                                    R.id.radio_button_glide_download -> getString(R.string.radio_button_glide_download_text)
-                                    R.id.radio_button_udacity_download -> getString(R.string.radio_button_udacity_download_text)
-                                    R.id.radio_button_retrofit_download -> getString(R.string.radio_button_retrofit_download_text)
-                                    else -> throw IllegalArgumentException("Unable to get file name.")
-                            })
+                                getFileName(binding.root.radio_group.checkedRadioButtonId)
+                            )
                             putExtra(getString(R.string.notification_id_key), NOTIFICATION_ID)
                         }
 
@@ -139,17 +135,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun getFileName(checkedRadioButtonId: Int) = when (checkedRadioButtonId) {
+        R.id.radio_button_glide_download -> getString(R.string.radio_button_glide_download_text)
+        R.id.radio_button_udacity_download -> getString(R.string.radio_button_udacity_download_text)
+        R.id.radio_button_retrofit_download -> getString(R.string.radio_button_retrofit_download_text)
+        else -> throw IllegalArgumentException("Unable to get file name.")
+    }
+
     private fun download() {
 
-        val fileUrl = when(binding.root.radio_group.checkedRadioButtonId) {
-            R.id.radio_button_glide_download -> getString(R.string.glide_file_directory)
-            R.id.radio_button_udacity_download -> getString(R.string.udacity_file_directory)
-            R.id.radio_button_retrofit_download -> getString(R.string.retrofit_file_download)
-            else -> throw IllegalArgumentException("Invalid file option selected.")
-        }
-
         val request =
-            DownloadManager.Request(Uri.parse(fileUrl))
+            DownloadManager.Request(Uri.parse(getFilePath(binding.root.radio_group.checkedRadioButtonId)))
                 .setTitle(getString(R.string.app_name))
                 .setDescription(getString(R.string.app_description))
                 .setRequiresCharging(false)
@@ -163,11 +159,15 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, downloadID.toString(), Toast.LENGTH_SHORT).show()
     }
 
+    private fun getFilePath(checkedRadioButtonId: Int) = when (checkedRadioButtonId) {
+        R.id.radio_button_glide_download -> getString(R.string.glide_file_directory)
+        R.id.radio_button_udacity_download -> getString(R.string.udacity_file_directory)
+        R.id.radio_button_retrofit_download -> getString(R.string.retrofit_file_download)
+        else -> throw IllegalArgumentException("Invalid file option selected.")
+    }
+
     companion object {
-        private const val URL =
-            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
         private const val CHANNEL_ID = "download_file_channel_id"
         private const val NOTIFICATION_ID = 1
     }
-
 }
