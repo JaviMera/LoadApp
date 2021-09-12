@@ -4,8 +4,10 @@ import android.app.NotificationManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.udacity.databinding.ActivityDetailBinding
+import com.udacity.models.FileDetail
 import kotlinx.android.synthetic.main.activity_detail.*
 import kotlinx.android.synthetic.main.content_detail.view.*
+import java.io.File
 
 class DetailActivity : AppCompatActivity() {
 
@@ -17,9 +19,12 @@ class DetailActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(toolbar)
 
+
         intent.extras?.let{
-            binding.root.file_name_value.text = it.getString(getString(R.string.downloaded_file_name_key))
-            binding.root.file_status_value.text = it.getString(getString(R.string.downloaded_file_status_key))
+            binding.content.file = FileDetail(
+                it.getString(getString(R.string.downloaded_file_name_key))!!,
+                it.getString(getString(R.string.downloaded_file_status_key))!!
+            )
 
             val notificationManager = getSystemService(NotificationManager::class.java)
             notificationManager.cancel(it.getInt(getString(R.string.notification_id_key)))
