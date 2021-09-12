@@ -22,7 +22,7 @@ class DetailActivity : AppCompatActivity() {
             binding.root.file_status_value.text = it.getString(getString(R.string.downloaded_file_status_key))
 
             val notificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.cancel(it.getInt(getString(R.string.notification_id)))
+            notificationManager.cancel(it.getInt(getString(R.string.notification_id_key)))
         }
     }
 }

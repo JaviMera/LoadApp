@@ -4,7 +4,7 @@ import android.app.DownloadManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_ONE_SHOT
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.content_main.view.*
 import timber.log.Timber
+import java.lang.IllegalArgumentException
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,10 +48,15 @@ class MainActivity : AppCompatActivity() {
 
         custom_button.setOnClickListener {
 
-            if(binding.root.radio_group.checkedRadioButtonId == -1){
-                Toast.makeText(this, "Please select a file to download from the options.", Toast.LENGTH_SHORT).show()
-            }else{
-                download()
+            try {
+                if(binding.root.radio_group.checkedRadioButtonId == -1){
+                    Toast.makeText(this, "Please select a file to download from the options.", Toast.LENGTH_SHORT).show()
+                }else{
+                    download()
+                }
+            }catch(exception: Exception){
+                Toast.makeText(baseContext, "Unable to download the selected file.", Toast.LENGTH_SHORT).show()
+                Timber.i("There was an error downloading the file. $exception.message")
             }
         }
 
@@ -73,56 +79,77 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
 
-            if(id == downloadID){
-                val query = DownloadManager.Query()
-                query.setFilterById(id)
-                val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-                val cursor = downloadManager.query(query)
+            try {
+                Timber.i("Comparing $id with $downloadID")
+                if(id == downloadID){
+                    val query = DownloadManager.Query()
+                    query.setFilterById(id)
+                    val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+                    val cursor = downloadManager.query(query)
 
-                if(cursor.moveToFirst()){
+                    if(cursor.moveToFirst()){
 
-                    val statusColumn = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
-                    val detailActivityIntent = Intent(baseContext, DetailActivity::class.java)
+                        val statusColumn = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                        val detailActivityIntent = Intent(baseContext, DetailActivity::class.java)
 
-                    val titleColumn = cursor.getColumnIndex(DownloadManager.COLUMN_TITLE)
-                    val title = cursor.getString(titleColumn)
+                        val titleColumn = cursor.getColumnIndex(DownloadManager.COLUMN_TITLE)
+                        val title = cursor.getString(titleColumn)
 
-                    with(detailActivityIntent) {
-                        when(cursor.getInt(statusColumn)){
-                            DownloadManager.STATUS_SUCCESSFUL -> detailActivityIntent.putExtra(getString(
-                                                            R.string.downloaded_file_status_key), getString(
-                                                                                            R.string.downloaded_file_successful))
-                            DownloadManager.STATUS_FAILED -> detailActivityIntent.putExtra(getString(
-                                R.string.downloaded_file_status_key), getString(R.string.downloaded_file_fail))
+                        with(detailActivityIntent) {
+                            when(cursor.getInt(statusColumn)){
+                                DownloadManager.STATUS_SUCCESSFUL -> detailActivityIntent.putExtra(getString(
+                                                                R.string.downloaded_file_status_key), getString(
+                                                                                                R.string.downloaded_file_successful))
+                                DownloadManager.STATUS_FAILED -> detailActivityIntent.putExtra(getString(
+                                    R.string.downloaded_file_status_key), getString(R.string.downloaded_file_fail))
+                            }
+                            putExtra(
+                                getString(R.string.downloaded_file_name_key),
+                                when(binding.root.radio_group.checkedRadioButtonId){
+                                    R.id.radio_button_glide_download -> getString(R.string.radio_button_glide_download_text)
+                                    R.id.radio_button_udacity_download -> getString(R.string.radio_button_udacity_download_text)
+                                    R.id.radio_button_retrofit_download -> getString(R.string.radio_button_retrofit_download_text)
+                                    else -> throw IllegalArgumentException("Unable to get file name.")
+                            })
+                            putExtra(getString(R.string.notification_id_key), NOTIFICATION_ID)
                         }
-                        putExtra(getString(R.string.downloaded_file_name_key), getString(R.string.radio_button_retrofit_download_text))
-                        putExtra(getString(R.string.notification_id), NOTIFICATION_ID)
+
+                        val builder = NotificationCompat.Builder(baseContext, CHANNEL_ID)
+                            .setSmallIcon(R.drawable.ic_assistant_black_24dp)
+                            .setContentTitle("Udacity: Android Kotlin Nanodegree")
+                            .setContentText("The $title is downloaded")
+                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                            .addAction(
+                                R.drawable.ic_assistant_black_24dp,
+                                "Check Status",
+                                PendingIntent.getActivity(baseContext, 0, detailActivityIntent, FLAG_UPDATE_CURRENT)
+                            )
+
+                        val notificationManager = getSystemService(NotificationManager::class.java)
+                        notificationManager.notify(NOTIFICATION_ID, builder.build())
+
+                    } else{
+                        Timber.i("There is nothing in the cursor to query.")
                     }
-
-                    val builder = NotificationCompat.Builder(baseContext, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_assistant_black_24dp)
-                        .setContentTitle("Udacity: Android Kotlin Nanodegree")
-                        .setContentText("The $title is downloaded")
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .addAction(
-                            R.drawable.ic_assistant_black_24dp,
-                            "Check Status",
-                            PendingIntent.getActivity(baseContext, 0, detailActivityIntent, FLAG_ONE_SHOT)
-                        )
-
-                    val notificationManager = getSystemService(NotificationManager::class.java)
-                    notificationManager.notify(NOTIFICATION_ID, builder.build())
-
-                } else{
-                    Timber.i("There is nothing in the cursor to query.")
                 }
+            }catch(exception: Exception){
+                Toast.makeText(baseContext, "Unable to send notification", Toast.LENGTH_SHORT).show()
+                Timber.i("There was an error trying to send the file downloaded notification. ${exception.message}")
             }
         }
     }
 
     private fun download() {
+
+        val fileUrl = when(binding.root.radio_group.checkedRadioButtonId) {
+            R.id.radio_button_glide_download -> getString(R.string.glide_file_directory)
+            R.id.radio_button_udacity_download -> getString(R.string.udacity_file_directory)
+            R.id.radio_button_retrofit_download -> getString(R.string.retrofit_file_download)
+            else -> throw IllegalArgumentException("Invalid file option selected.")
+        }
+
         val request =
-            DownloadManager.Request(Uri.parse(URL))
+            DownloadManager.Request(Uri.parse(fileUrl))
                 .setTitle(getString(R.string.app_name))
                 .setDescription(getString(R.string.app_description))
                 .setRequiresCharging(false)

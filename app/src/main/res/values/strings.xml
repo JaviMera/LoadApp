@@ -20,5 +20,8 @@
     <string name="downloaded_file_name_key">FILE_NAME</string>
     <string name="detail_file_name">File name:</string>
     <string name="detail_status">Status:</string>
-    <string name="notification_id">NOTIFICATION_ID</string>
+    <string name="notification_id_key">NOTIFICATION_ID</string>
+    <string name="glide_file_directory">https://github.com/bumptech/glide/archive/master.zip</string>
+    <string name="udacity_file_directory">https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip</string>
+    <string name="retrofit_file_download">https://github.com/square/retrofit/archive/master.zip</string>
 </resources>
