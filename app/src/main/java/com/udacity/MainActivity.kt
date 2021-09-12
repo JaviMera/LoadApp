@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
                 if(binding.root.radio_group.checkedRadioButtonId == -1){
                     Toast.makeText(this, "Please select a file to download from the options.", Toast.LENGTH_SHORT).show()
                 }else{
+                    custom_button.setText(getString(R.string.loading_button_clicked_text))
                     download()
                 }
             }catch(exception: Exception){

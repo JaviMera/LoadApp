@@ -3,7 +3,6 @@ package com.udacity
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
-import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -15,8 +14,9 @@ class LoadingButton @JvmOverloads constructor(
     private var widthSize = 0
     private var heightSize = 0
     private val valueAnimator = ValueAnimator()
-    private lateinit var downloadText: String
-
+    private var downloadText: String
+    private var buttonPaint: Paint
+    private var textPaint: Paint
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
 
     }
@@ -26,32 +26,34 @@ class LoadingButton @JvmOverloads constructor(
             attrs,
             R.styleable.LoadingButton,
             0,0).apply {
-
                 downloadText = getString(R.styleable.LoadingButton_text)!!
         }
+
+        buttonPaint = Paint()
+        textPaint = Paint()
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        val paint = Paint().apply {
+        buttonPaint.apply {
             color = ContextCompat.getColor(context ,R.color.colorPrimary)
         }
 
-        val textPaint = TextPaint().apply {
+        textPaint.apply {
             color = Color.WHITE
             textAlign = Paint.Align.CENTER
-            textSize = resources.getDimension(R.dimen.custom_button_text_size)
+            textSize = resources.getDimension(R.dimen.loading_button_text_size)
         }
 
         val textHeight = textPaint.descent() - textPaint.ascent()
         val textOffset = (textHeight / 2) - textPaint.descent()
-        val bounds = Rect(0,0, width, height)
 
-        canvas?.drawRect(bounds, paint)
+        val buttonBounds = Rect(0,0, width, height)
+        canvas?.drawRect(buttonBounds, buttonPaint)
         canvas?.drawText(downloadText,
-            bounds.centerX() * 1f,
-            bounds.centerY() * 1f + (textOffset), textPaint)
+            buttonBounds.centerX() * 1f,
+            buttonBounds.centerY() * 1f + (textOffset), textPaint)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -67,4 +69,9 @@ class LoadingButton @JvmOverloads constructor(
         setMeasuredDimension(w, h)
     }
 
+    fun setText(newText: String){
+        downloadText = newText
+        invalidate()
+        requestLayout()
+    }
 }
