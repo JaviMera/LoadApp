@@ -19,6 +19,7 @@ import androidx.core.app.NotificationCompat
 import com.udacity.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.content_main.view.*
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -45,7 +46,12 @@ class MainActivity : AppCompatActivity() {
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
         custom_button.setOnClickListener {
-            download()
+
+            if(binding.root.radio_group.checkedRadioButtonId == -1){
+                Toast.makeText(this, "Please select a file to download from the options.", Toast.LENGTH_SHORT).show()
+            }else{
+                download()
+            }
         }
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
