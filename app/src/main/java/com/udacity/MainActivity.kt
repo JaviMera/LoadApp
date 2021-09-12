@@ -13,6 +13,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -53,6 +54,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Please select a file to download from the options.", Toast.LENGTH_SHORT).show()
                 }else{
                     custom_button.setText(getString(R.string.loading_button_clicked_text))
+                    custom_button.upateStatus(ButtonState.Clicked)
                     download()
                 }
             }catch(exception: Exception){

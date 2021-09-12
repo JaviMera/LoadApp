@@ -1,8 +1,11 @@
 package com.udacity
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
+import android.renderscript.Sampler
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -13,12 +16,31 @@ class LoadingButton @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
     private var widthSize = 0
     private var heightSize = 0
-    private val valueAnimator = ValueAnimator()
+    private var valueAnimator = ValueAnimator()
     private var downloadText: String
     private var buttonPaint: Paint
+    private var progressPaint = Paint().apply {
+        color = ContextCompat.getColor(context, R.color.colorPrimaryDark)
+        style = Paint.Style.FILL
+    }
+
     private var textPaint: Paint
+    private var progress: Int
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
 
+        when(new){
+            ButtonState.Clicked ->
+                valueAnimator = ValueAnimator.ofInt(0, measuredWidth).apply {
+                    addUpdateListener {
+                        progress = animatedValue as Int
+                        invalidate()
+                    }
+                    duration = 2000
+                    repeatMode = ValueAnimator.RESTART
+                    repeatCount = ValueAnimator.INFINITE
+                    start()
+                }
+        }
     }
 
     init {
@@ -29,6 +51,7 @@ class LoadingButton @JvmOverloads constructor(
                 downloadText = getString(R.styleable.LoadingButton_text)!!
         }
 
+        progress = 0
         buttonPaint = Paint()
         textPaint = Paint()
     }
@@ -51,9 +74,18 @@ class LoadingButton @JvmOverloads constructor(
 
         val buttonBounds = Rect(0,0, width, height)
         canvas?.drawRect(buttonBounds, buttonPaint)
+
+        if(buttonState == ButtonState.Clicked){
+            canvas?.drawRect(0f, 0f, progress.toFloat(), heightSize.toFloat(), progressPaint)
+        }
+        
         canvas?.drawText(downloadText,
             buttonBounds.centerX() * 1f,
             buttonBounds.centerY() * 1f + (textOffset), textPaint)
+    }
+
+    fun upateStatus(state: ButtonState){
+        buttonState = state
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -70,6 +102,7 @@ class LoadingButton @JvmOverloads constructor(
     }
 
     fun setText(newText: String){
+
         downloadText = newText
         invalidate()
         requestLayout()
