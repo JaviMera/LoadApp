@@ -5,8 +5,6 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import android.widget.Button
-import androidx.core.content.ContextCompat
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -21,6 +19,9 @@ class LoadingButton @JvmOverloads constructor(
     private val arcPaint: Paint
     private var textPaint: Paint
     private var progress: Int = 0
+    private var buttonColor: Int
+    private var progressBarColor: Int
+    private var progressArcColor: Int
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
 
         when(new){
@@ -58,21 +59,30 @@ class LoadingButton @JvmOverloads constructor(
                 downloadText = getString(R.styleable.LoadingButton_text)!!
         }
 
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.LoadingButton)
+        try {
+            buttonColor = typedArray.getColor(R.styleable.LoadingButton_buttonColor, 0)
+            progressBarColor = typedArray.getColor(R.styleable.LoadingButton_progressBarColor, 0)
+            progressArcColor = typedArray.getColor(R.styleable.LoadingButton_progressArcColor, 0)
+        }finally {
+            typedArray.recycle()
+        }
+
         buttonState = ButtonState.NotClicked
 
         buttonPaint = Paint().apply {
             style = Paint.Style.FILL
-            color = ContextCompat.getColor(context ,R.color.colorPrimary)
+            color = buttonColor
         }
 
         progressPaint = Paint().apply {
-            color = ContextCompat.getColor(context, R.color.colorPrimaryDark)
+            color = progressBarColor
             style = Paint.Style.FILL
         }
 
         arcPaint = Paint().apply {
             style = Paint.Style.FILL
-            color = ContextCompat.getColor(context, R.color.colorAccent)
+            color = progressArcColor
         }
 
         textPaint = Paint().apply {
@@ -135,7 +145,7 @@ class LoadingButton @JvmOverloads constructor(
     fun upateStatus(state: ButtonState){
         buttonState = state
     }
-    
+
     fun setText(newText: String){
 
         downloadText = newText

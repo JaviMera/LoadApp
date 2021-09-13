@@ -2,5 +2,9 @@
 <resources>
     <declare-styleable name="LoadingButton">
         <attr name="text" format="string" />
+        <attr name="buttonColor" format="color" />
+        <attr name="progressBarColor" format="color" />
+        <attr name="progressArcColor" format="color" />
+        <attr name="textSize" format="dimension" />
     </declare-styleable>
 </resources>
