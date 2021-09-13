@@ -1,16 +1,12 @@
 package com.udacity
 
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
-import android.renderscript.Sampler
 import android.util.AttributeSet
 import android.view.View
 import android.widget.Button
 import androidx.core.content.ContextCompat
-import kotlinx.android.synthetic.main.content_main.view.*
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -21,17 +17,14 @@ class LoadingButton @JvmOverloads constructor(
     private var valueAnimator = ValueAnimator()
     private var downloadText: String
     private var buttonPaint: Paint
-    private var progressPaint = Paint().apply {
-        color = ContextCompat.getColor(context, R.color.colorPrimaryDark)
-        style = Paint.Style.FILL
-    }
-
+    private var progressPaint: Paint
+    private val arcPaint: Paint
     private var textPaint: Paint
     private var progress: Int = 0
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
 
         when(new){
-            ButtonState.Clicked ->
+            ButtonState.Loading ->
                 valueAnimator = ValueAnimator.ofInt(0, measuredWidth).apply {
                     addUpdateListener {
                         progress = animatedValue as Int
@@ -66,22 +59,31 @@ class LoadingButton @JvmOverloads constructor(
         }
 
         buttonState = ButtonState.NotClicked
-        buttonPaint = Paint()
-        textPaint = Paint()
-    }
 
-    override fun onDraw(canvas: Canvas?) {
-        super.onDraw(canvas)
-
-        buttonPaint.apply {
+        buttonPaint = Paint().apply {
+            style = Paint.Style.FILL
             color = ContextCompat.getColor(context ,R.color.colorPrimary)
         }
 
-        textPaint.apply {
+        progressPaint = Paint().apply {
+            color = ContextCompat.getColor(context, R.color.colorPrimaryDark)
+            style = Paint.Style.FILL
+        }
+
+        arcPaint = Paint().apply {
+            style = Paint.Style.FILL
+            color = ContextCompat.getColor(context, R.color.colorAccent)
+        }
+
+        textPaint = Paint().apply {
             color = Color.WHITE
             textAlign = Paint.Align.CENTER
             textSize = resources.getDimension(R.dimen.loading_button_text_size)
         }
+    }
+
+    override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
 
         val textHeight = textPaint.descent() - textPaint.ascent()
         val textOffset = (textHeight / 2) - textPaint.descent()
@@ -89,12 +91,26 @@ class LoadingButton @JvmOverloads constructor(
         val buttonBounds = Rect(0,0, width, height)
         canvas?.drawRect(buttonBounds, buttonPaint)
 
-        if(buttonState == ButtonState.Clicked){
-            canvas?.drawRect(0f, 0f, progress.toFloat(), heightSize.toFloat(), progressPaint)
-        } else if(buttonState == ButtonState.Completed){
-            canvas?.drawRect(0f, 0f, measuredWidth.toFloat(), heightSize.toFloat(), progressPaint)
-        } else if(buttonState == ButtonState.NotClicked){
-            // don't draw the rect when the button hasn't been clicked
+        when (buttonState) {
+            ButtonState.Loading -> {
+                canvas?.drawRect(0f, 0f, progress.toFloat(), heightSize.toFloat(), progressPaint)
+                canvas?.drawArc(
+                    widthSize - 175f,
+                    heightSize / 2 - 35f,
+                    widthSize - 105f,
+                    heightSize / 2 + 35f,
+                    270F,
+                    progress / 2.5f,
+                    true,
+                    arcPaint
+                )
+            }
+            ButtonState.Completed -> {
+                canvas?.drawRect(0f, 0f, measuredWidth.toFloat(), heightSize.toFloat(), progressPaint)
+            }
+            ButtonState.NotClicked -> {
+                // don't draw the rect when the button hasn't been clicked
+            }
         }
         
         canvas?.drawText(downloadText,
@@ -102,9 +118,6 @@ class LoadingButton @JvmOverloads constructor(
             buttonBounds.centerY() * 1f + (textOffset), textPaint)
     }
 
-    fun upateStatus(state: ButtonState){
-        buttonState = state
-    }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val minw: Int = paddingLeft + paddingRight + suggestedMinimumWidth
@@ -119,6 +132,10 @@ class LoadingButton @JvmOverloads constructor(
         setMeasuredDimension(w, h)
     }
 
+    fun upateStatus(state: ButtonState){
+        buttonState = state
+    }
+    
     fun setText(newText: String){
 
         downloadText = newText

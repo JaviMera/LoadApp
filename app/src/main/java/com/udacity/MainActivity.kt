@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Please select a file to download from the options.", Toast.LENGTH_SHORT).show()
                 }else{
                     custom_button.setText(getString(R.string.loading_button_clicked_text))
-                    custom_button.upateStatus(ButtonState.Clicked)
+                    custom_button.upateStatus(ButtonState.Loading)
                     download()
                 }
             }catch(exception: Exception){
