@@ -22,6 +22,7 @@ class LoadingButton @JvmOverloads constructor(
     private var buttonColor: Int
     private var progressBarColor: Int
     private var progressArcColor: Int
+    private var loadingButtonTextSize: Float
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
 
         when(new){
@@ -64,6 +65,7 @@ class LoadingButton @JvmOverloads constructor(
             buttonColor = typedArray.getColor(R.styleable.LoadingButton_buttonColor, 0)
             progressBarColor = typedArray.getColor(R.styleable.LoadingButton_progressBarColor, 0)
             progressArcColor = typedArray.getColor(R.styleable.LoadingButton_progressArcColor, 0)
+            loadingButtonTextSize = typedArray.getDimension(R.styleable.LoadingButton_textSize, 0f)
         }finally {
             typedArray.recycle()
         }
@@ -88,7 +90,7 @@ class LoadingButton @JvmOverloads constructor(
         textPaint = Paint().apply {
             color = Color.WHITE
             textAlign = Paint.Align.CENTER
-            textSize = resources.getDimension(R.dimen.loading_button_text_size)
+            textSize = loadingButtonTextSize
         }
     }
 

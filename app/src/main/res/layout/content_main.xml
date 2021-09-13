@@ -71,7 +71,7 @@
             android:layout_marginBottom="16dp"
             android:background="@color/colorPrimary"
             app:text="@string/loading_button_initial_text"
-            app:textSize="15sp"
+            app:textSize="@dimen/loading_button_text_size"
             app:progressBarColor="@color/colorPrimaryDark"
             app:progressArcColor="@color/colorAccent"
             app:buttonColor="@color/colorPrimary"
