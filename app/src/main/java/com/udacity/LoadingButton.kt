@@ -8,7 +8,9 @@ import android.graphics.*
 import android.renderscript.Sampler
 import android.util.AttributeSet
 import android.view.View
+import android.widget.Button
 import androidx.core.content.ContextCompat
+import kotlinx.android.synthetic.main.content_main.view.*
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -25,7 +27,7 @@ class LoadingButton @JvmOverloads constructor(
     }
 
     private var textPaint: Paint
-    private var progress: Int
+    private var progress: Int = 0
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
 
         when(new){
@@ -40,6 +42,18 @@ class LoadingButton @JvmOverloads constructor(
                     repeatCount = ValueAnimator.INFINITE
                     start()
                 }
+
+            ButtonState.Completed -> {
+                valueAnimator.cancel()
+                invalidate()
+                requestLayout()
+            }
+
+            ButtonState.NotClicked -> {
+                progress = 0
+                invalidate()
+                requestLayout()
+            }
         }
     }
 
@@ -51,7 +65,7 @@ class LoadingButton @JvmOverloads constructor(
                 downloadText = getString(R.styleable.LoadingButton_text)!!
         }
 
-        progress = 0
+        buttonState = ButtonState.NotClicked
         buttonPaint = Paint()
         textPaint = Paint()
     }
@@ -77,6 +91,10 @@ class LoadingButton @JvmOverloads constructor(
 
         if(buttonState == ButtonState.Clicked){
             canvas?.drawRect(0f, 0f, progress.toFloat(), heightSize.toFloat(), progressPaint)
+        } else if(buttonState == ButtonState.Completed){
+            canvas?.drawRect(0f, 0f, measuredWidth.toFloat(), heightSize.toFloat(), progressPaint)
+        } else if(buttonState == ButtonState.NotClicked){
+            // don't draw the rect when the button hasn't been clicked
         }
         
         canvas?.drawText(downloadText,

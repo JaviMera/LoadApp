@@ -80,8 +80,10 @@ class MainActivity : AppCompatActivity() {
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
 
+            custom_button.upateStatus(ButtonState.Completed)
+
+            val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             try {
                 Timber.i("Comparing $id with $downloadID")
                 if(id == downloadID){
@@ -95,23 +97,29 @@ class MainActivity : AppCompatActivity() {
                         val statusColumn = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
                         val detailActivityIntent = Intent(baseContext, DetailActivity::class.java)
 
+                        when(cursor.getInt(statusColumn)){
+                            DownloadManager.STATUS_SUCCESSFUL -> {
+
+                                custom_button.setText("Download Successful!")
+                                detailActivityIntent.putExtra(getString(
+                                    R.string.downloaded_file_status_key),
+                                    getString(R.string.downloaded_file_successful)
+                                )
+                            }
+                            DownloadManager.STATUS_FAILED -> {
+                                custom_button.setText("Download Failed")
+                                detailActivityIntent.putExtra(getString(
+                                    R.string.downloaded_file_status_key),
+                                    getString(R.string.downloaded_file_fail)
+                                )
+                            }
+                        }
+
+                        detailActivityIntent.putExtra(getString(R.string.downloaded_file_name_key),getFileName(binding.root.radio_group.checkedRadioButtonId))
+                        detailActivityIntent.putExtra(getString(R.string.notification_id_key), NOTIFICATION_ID)
+
                         val titleColumn = cursor.getColumnIndex(DownloadManager.COLUMN_TITLE)
                         val title = cursor.getString(titleColumn)
-
-                        with(detailActivityIntent) {
-                            when(cursor.getInt(statusColumn)){
-                                DownloadManager.STATUS_SUCCESSFUL -> detailActivityIntent.putExtra(getString(
-                                                                R.string.downloaded_file_status_key), getString(
-                                                                                                R.string.downloaded_file_successful))
-                                DownloadManager.STATUS_FAILED -> detailActivityIntent.putExtra(getString(
-                                    R.string.downloaded_file_status_key), getString(R.string.downloaded_file_fail))
-                            }
-                            putExtra(
-                                getString(R.string.downloaded_file_name_key),
-                                getFileName(binding.root.radio_group.checkedRadioButtonId)
-                            )
-                            putExtra(getString(R.string.notification_id_key), NOTIFICATION_ID)
-                        }
 
                         val builder = NotificationCompat.Builder(baseContext, CHANNEL_ID)
                             .setSmallIcon(R.drawable.ic_assistant_black_24dp)
