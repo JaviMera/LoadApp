@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
 
                         detailActivityIntent.putExtra(getString(R.string.downloaded_file_name_key),getFileName(binding.root.radio_group.checkedRadioButtonId))
                         detailActivityIntent.putExtra(getString(R.string.notification_id_key), NOTIFICATION_ID)
-
+                        detailActivityIntent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
                         val titleColumn = cursor.getColumnIndex(DownloadManager.COLUMN_TITLE)
                         val title = cursor.getString(titleColumn)
 
