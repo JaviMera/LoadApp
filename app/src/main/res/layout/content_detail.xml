@@ -25,53 +25,41 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/detail_file_name"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toStartOf="@+id/file_name_value"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/file_name_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:text="@{file.fileName}"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/file_name_title"
-            app:layout_constraintTop_toTopOf="@+id/file_name_title"
             tools:text="@string/radio_button_retrofit_download_text" />
 
         <TextView
             android:id="@+id/file_status_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
             android:text="@string/detail_status"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toStartOf="@+id/file_status_value"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/file_name_value" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/file_status_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:text="@{file.fileStatus}"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/file_status_title"
-            app:layout_constraintTop_toTopOf="@+id/file_status_title"
             app:statusColor="@{file.fileStatus}"
             tools:text="@string/downloaded_file_successful" />
+
+        <Button
+            android:id="@+id/ok"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:text="@string/detail_ok_button_text"
+            android:textColor="@color/white" />
 
     </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>
