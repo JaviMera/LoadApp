@@ -41,13 +41,11 @@ class LoadingButton @JvmOverloads constructor(
             ButtonState.Completed -> {
                 valueAnimator.cancel()
                 invalidate()
-                requestLayout()
             }
 
             ButtonState.NotClicked -> {
                 progress = 0
                 invalidate()
-                requestLayout()
             }
         }
     }
@@ -152,6 +150,5 @@ class LoadingButton @JvmOverloads constructor(
 
         downloadText = newText
         invalidate()
-        requestLayout()
     }
 }

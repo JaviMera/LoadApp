@@ -11,9 +11,11 @@
             name="file"
             type="com.udacity.models.FileDetail" />
     </data>
-    <androidx.constraintlayout.widget.ConstraintLayout
+
+    <androidx.constraintlayout.motion.widget.MotionLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:layoutDescription="@xml/detail_activity_scene"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context=".DetailActivity"
         tools:showIn="@layout/activity_detail">
@@ -22,10 +24,8 @@
             android:id="@+id/file_name_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:text="@string/detail_file_name"
-            android:textSize="15sp"
+            android:textSize="20sp"
             app:layout_constraintEnd_toStartOf="@+id/file_name_value"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,9 +36,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:textSize="15sp"
-            android:textColor="@color/colorPrimaryDark"
             android:text="@{file.fileName}"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/file_name_title"
@@ -52,7 +52,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
             android:text="@string/detail_status"
-            android:textSize="15sp"
+            android:textSize="20sp"
             app:layout_constraintEnd_toStartOf="@+id/file_status_value"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -63,9 +63,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:textSize="15sp"
-            android:textColor="@color/colorPrimaryDark"
             android:text="@{file.fileStatus}"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/file_status_title"
@@ -73,5 +73,5 @@
             app:statusColor="@{file.fileStatus}"
             tools:text="@string/downloaded_file_successful" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>

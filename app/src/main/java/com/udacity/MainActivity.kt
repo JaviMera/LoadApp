@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -53,9 +54,9 @@ class MainActivity : AppCompatActivity() {
                 if(binding.root.radio_group.checkedRadioButtonId == -1){
                     Toast.makeText(this, "Please select a file to download from the options.", Toast.LENGTH_SHORT).show()
                 }else{
+                    download()
                     custom_button.setText(getString(R.string.loading_button_clicked_text))
                     custom_button.upateStatus(ButtonState.Loading)
-                    download()
                 }
             }catch(exception: Exception){
                 Toast.makeText(baseContext, "Unable to download the selected file.", Toast.LENGTH_SHORT).show()
@@ -67,7 +68,6 @@ class MainActivity : AppCompatActivity() {
 
             val notificationChannel = NotificationChannel(CHANNEL_ID, "File Downloader", NotificationManager.IMPORTANCE_HIGH).apply {
                 setShowBadge(false)
-                enableLights(true)
                 lightColor = Color.RED
                 enableVibration(true)
                 description = getString(R.string.app_name)
@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity() {
                             .addAction(
                                 R.drawable.ic_assistant_black_24dp,
                                 "Check Status",
-                                PendingIntent.getActivity(baseContext, 0, detailActivityIntent, FLAG_UPDATE_CURRENT)
+                                PendingIntent.getActivity(baseContext, 0, detailActivityIntent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
                             )
 
                         val notificationManager = getSystemService(NotificationManager::class.java)
