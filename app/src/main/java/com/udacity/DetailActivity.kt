@@ -1,6 +1,7 @@
 package com.udacity
 
 import android.app.NotificationManager
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.udacity.databinding.ActivityDetailBinding
@@ -19,7 +20,6 @@ class DetailActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(toolbar)
 
-
         intent.extras?.let{
             binding.content.file = FileDetail(
                 it.getString(getString(R.string.downloaded_file_name_key))!!,
@@ -28,6 +28,11 @@ class DetailActivity : AppCompatActivity() {
 
             val notificationManager = getSystemService(NotificationManager::class.java)
             notificationManager.cancel(it.getInt(getString(R.string.notification_id_key)))
+        }
+
+        binding.content.ok.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
     }
 }
