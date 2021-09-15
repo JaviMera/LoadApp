@@ -85,7 +85,6 @@ class MainActivity : AppCompatActivity() {
 
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             try {
-                Timber.i("Comparing $id with $downloadID")
                 if(id == downloadID){
                     val query = DownloadManager.Query()
                     query.setFilterById(id)
@@ -146,18 +145,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getFileName(checkedRadioButtonId: Int) = when (checkedRadioButtonId) {
-        R.id.radio_button_glide_download -> getString(R.string.radio_button_glide_download_text)
-        R.id.radio_button_udacity_download -> getString(R.string.radio_button_udacity_download_text)
-        R.id.radio_button_retrofit_download -> getString(R.string.radio_button_retrofit_download_text)
-        else -> throw IllegalArgumentException("Unable to get file name.")
-    }
-
     private fun download() {
+
+        val fileName = getTitle(binding.root.radio_group.checkedRadioButtonId)
 
         val request =
             DownloadManager.Request(Uri.parse(getFilePath(binding.root.radio_group.checkedRadioButtonId)))
-                .setTitle(getString(R.string.app_name))
+                .setTitle(fileName)
                 .setDescription(getString(R.string.app_description))
                 .setRequiresCharging(false)
                 .setAllowedOverMetered(true)
@@ -175,6 +169,20 @@ class MainActivity : AppCompatActivity() {
         R.id.radio_button_udacity_download -> getString(R.string.udacity_file_directory)
         R.id.radio_button_retrofit_download -> getString(R.string.retrofit_file_download)
         else -> throw IllegalArgumentException("Invalid file option selected.")
+    }
+
+    private fun getFileName(checkedRadioButtonId: Int) = when (checkedRadioButtonId) {
+        R.id.radio_button_glide_download -> getString(R.string.radio_button_glide_download_text)
+        R.id.radio_button_udacity_download -> getString(R.string.radio_button_udacity_download_text)
+        R.id.radio_button_retrofit_download -> getString(R.string.radio_button_retrofit_download_text)
+        else -> throw IllegalArgumentException("Unable to get file name.")
+    }
+
+    private fun getTitle(checkedRadioButtonId: Int) = when (checkedRadioButtonId) {
+        R.id.radio_button_glide_download -> getString(R.string.download_title_glide_file)
+        R.id.radio_button_udacity_download -> getString(R.string.download_title_loadapp_file)
+        R.id.radio_button_retrofit_download -> getString(R.string.download_title_retrofit_file)
+        else -> throw IllegalArgumentException("Unable to get title name.")
     }
 
     companion object {

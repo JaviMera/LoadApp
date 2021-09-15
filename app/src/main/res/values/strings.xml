@@ -27,4 +27,7 @@
     <string name="loading_button_initial_text">Download</string>
     <string name="loading_button_clicked_text">Downloading</string>
     <string name="detail_ok_button_text">OK</string>
+    <string name="download_title_glide_file">Glide file</string>
+    <string name="download_title_loadapp_file">LoadApp file</string>
+    <string name="download_title_retrofit_file">Retrofit file</string>
 </resources>
