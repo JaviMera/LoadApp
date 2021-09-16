@@ -40,6 +40,7 @@ class LoadingButton @JvmOverloads constructor(
 
             ButtonState.Completed -> {
                 valueAnimator.cancel()
+                progress = 0
                 invalidate()
             }
 
@@ -115,11 +116,9 @@ class LoadingButton @JvmOverloads constructor(
                     arcPaint
                 )
             }
+            ButtonState.NotClicked,
             ButtonState.Completed -> {
-                canvas?.drawRect(0f, 0f, measuredWidth.toFloat(), heightSize.toFloat(), progressPaint)
-            }
-            ButtonState.NotClicked -> {
-                // don't draw the rect when the button hasn't been clicked
+                canvas?.drawRect(buttonBounds, buttonPaint)
             }
         }
         
@@ -147,7 +146,6 @@ class LoadingButton @JvmOverloads constructor(
     }
 
     fun setText(newText: String){
-
         downloadText = newText
         invalidate()
     }

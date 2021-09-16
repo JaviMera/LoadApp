@@ -28,12 +28,7 @@ import java.lang.IllegalArgumentException
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
     private var downloadID: Long = 0
-
-    private lateinit var notificationManager: NotificationManager
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var action: NotificationCompat.Action
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +52,7 @@ class MainActivity : AppCompatActivity() {
                     download()
                     custom_button.setText(getString(R.string.loading_button_clicked_text))
                     custom_button.upateStatus(ButtonState.Loading)
+                    custom_button.isEnabled = false
                 }
             }catch(exception: Exception){
                 Toast.makeText(baseContext, "Unable to download the selected file.", Toast.LENGTH_SHORT).show()
@@ -81,7 +77,10 @@ class MainActivity : AppCompatActivity() {
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
 
+            custom_button.isEnabled = true
             custom_button.upateStatus(ButtonState.Completed)
+            custom_button.setText(getString(R.string.loading_button_initial_text))
+            Toast.makeText(baseContext, "File is downloaded!", Toast.LENGTH_SHORT).show()
 
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             try {
@@ -95,18 +94,16 @@ class MainActivity : AppCompatActivity() {
 
                         val statusColumn = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
                         val detailActivityIntent = Intent(baseContext, DetailActivity::class.java)
-
+                        val errorColumn = cursor.getColumnIndex(DownloadManager.COLUMN_REASON)
+                        Timber.i("Error: ${cursor.getString(errorColumn)}")
                         when(cursor.getInt(statusColumn)){
                             DownloadManager.STATUS_SUCCESSFUL -> {
-
-                                custom_button.setText("Download Successful!")
                                 detailActivityIntent.putExtra(getString(
                                     R.string.downloaded_file_status_key),
                                     getString(R.string.downloaded_file_successful)
                                 )
                             }
                             DownloadManager.STATUS_FAILED -> {
-                                custom_button.setText("Download Failed")
                                 detailActivityIntent.putExtra(getString(
                                     R.string.downloaded_file_status_key),
                                     getString(R.string.downloaded_file_fail)
@@ -148,8 +145,10 @@ class MainActivity : AppCompatActivity() {
     private fun download() {
 
         val fileName = getTitle(binding.root.radio_group.checkedRadioButtonId)
+        val url = getFilePath(binding.root.radio_group.checkedRadioButtonId)
+
         val request =
-            DownloadManager.Request(Uri.parse(getFilePath(binding.root.radio_group.checkedRadioButtonId)))
+            DownloadManager.Request(Uri.parse(url))
                 .setTitle(fileName)
                 .setDescription(getString(R.string.app_description))
                 .setRequiresCharging(false)
@@ -159,8 +158,6 @@ class MainActivity : AppCompatActivity() {
         val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         downloadID =
             downloadManager.enqueue(request)// enqueue puts the download request in the queue.
-
-        Toast.makeText(this, downloadID.toString(), Toast.LENGTH_SHORT).show()
     }
 
     private fun getFilePath(checkedRadioButtonId: Int) = when (checkedRadioButtonId) {
