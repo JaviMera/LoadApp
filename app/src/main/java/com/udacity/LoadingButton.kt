@@ -23,6 +23,8 @@ class LoadingButton @JvmOverloads constructor(
     private var progressBarColor: Int
     private var progressArcColor: Int
     private var loadingButtonTextSize: Float
+
+    // I thank paul77uk's github example on how to start implementing the button state logic.
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
 
         when(new){
@@ -102,6 +104,7 @@ class LoadingButton @JvmOverloads constructor(
         val buttonBounds = Rect(0,0, width, height)
         canvas?.drawRect(buttonBounds, buttonPaint)
 
+        // I thank paul77uk's github example on how to start implementing the button state logic.
         when (buttonState) {
             ButtonState.Loading -> {
                 canvas?.drawRect(0f, 0f, progress.toFloat(), heightSize.toFloat(), progressPaint)
