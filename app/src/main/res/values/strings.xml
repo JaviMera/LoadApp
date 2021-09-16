@@ -30,4 +30,15 @@
     <string name="download_title_glide_file">Glide file</string>
     <string name="download_title_loadapp_file">LoadApp file</string>
     <string name="download_title_retrofit_file">Retrofit file</string>
+    <string name="notification_button_text">Check Status</string>
+    <string name="notification_title_text">Udacity: Android Kotlin Nanodegree</string>
+    <string name="notification_context_text">The %s is downloaded</string>
+    <string name="file_downloaded_text">File is downloaded!</string>
+    <string name="no_file_selected_error_text">Please select a file to download from the options.</string>
+    <string name="download_manager_mismatch_id_error">There is nothing in the cursor to query.</string>
+    <string name="notification_send_error">Unable to send notification</string>
+    <string name="file_path_error">Invalid file option selected.</string>
+    <string name="file_name_error">Unable to get file name.</string>
+    <string name="download_manager_title_error">Unable to get title name.</string>
+    <string name="load_app_channel_id">download_file_channel_id</string>
 </resources>

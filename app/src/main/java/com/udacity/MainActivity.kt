@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
             try {
                 if(binding.root.radio_group.checkedRadioButtonId == -1){
-                    Toast.makeText(this, "Please select a file to download from the options.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.no_file_selected_error_text), Toast.LENGTH_SHORT).show()
                 }else{
                     download()
                     custom_button.setText(getString(R.string.loading_button_clicked_text))
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 
-            val notificationChannel = NotificationChannel(CHANNEL_ID, "File Downloader", NotificationManager.IMPORTANCE_HIGH).apply {
+            val notificationChannel = NotificationChannel(getString(R.string.load_app_channel_id), "File Downloader", NotificationManager.IMPORTANCE_HIGH).apply {
                 setShowBadge(false)
                 lightColor = Color.RED
                 enableVibration(true)
@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
             custom_button.isEnabled = true
             custom_button.upateStatus(ButtonState.Completed)
             custom_button.setText(getString(R.string.loading_button_initial_text))
-            Toast.makeText(baseContext, "File is downloaded!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(baseContext, getString(R.string.file_downloaded_text), Toast.LENGTH_SHORT).show()
 
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             try {
@@ -94,8 +94,7 @@ class MainActivity : AppCompatActivity() {
 
                         val statusColumn = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
                         val detailActivityIntent = Intent(baseContext, DetailActivity::class.java)
-                        val errorColumn = cursor.getColumnIndex(DownloadManager.COLUMN_REASON)
-                        Timber.i("Error: ${cursor.getString(errorColumn)}")
+
                         when(cursor.getInt(statusColumn)){
                             DownloadManager.STATUS_SUCCESSFUL -> {
                                 detailActivityIntent.putExtra(getString(
@@ -117,14 +116,14 @@ class MainActivity : AppCompatActivity() {
                         val titleColumn = cursor.getColumnIndex(DownloadManager.COLUMN_TITLE)
                         val title = cursor.getString(titleColumn)
 
-                        val builder = NotificationCompat.Builder(baseContext, CHANNEL_ID)
+                        val builder = NotificationCompat.Builder(baseContext, getString(R.string.load_app_channel_id))
                             .setSmallIcon(R.drawable.ic_assistant_black_24dp)
-                            .setContentTitle("Udacity: Android Kotlin Nanodegree")
-                            .setContentText("The $title is downloaded")
+                            .setContentTitle(getString(R.string.notification_title_text))
+                            .setContentText(getString(R.string.notification_context_text, title))
                             .setPriority(NotificationCompat.PRIORITY_HIGH)
                             .addAction(
                                 R.drawable.ic_assistant_black_24dp,
-                                "Check Status",
+                                getString(R.string.notification_button_text),
                                 PendingIntent.getActivity(baseContext, 0, detailActivityIntent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
                             )
 
@@ -132,11 +131,11 @@ class MainActivity : AppCompatActivity() {
                         notificationManager.notify(NOTIFICATION_ID, builder.build())
 
                     } else{
-                        Timber.i("There is nothing in the cursor to query.")
+                        Timber.i(getString(R.string.download_manager_mismatch_id_error))
                     }
                 }
             }catch(exception: Exception){
-                Toast.makeText(baseContext, "Unable to send notification", Toast.LENGTH_SHORT).show()
+                Toast.makeText(baseContext, getString(R.string.notification_send_error), Toast.LENGTH_SHORT).show()
                 Timber.i("There was an error trying to send the file downloaded notification. ${exception.message}")
             }
         }
@@ -164,25 +163,24 @@ class MainActivity : AppCompatActivity() {
         R.id.radio_button_glide_download -> getString(R.string.glide_file_directory)
         R.id.radio_button_udacity_download -> getString(R.string.udacity_file_directory)
         R.id.radio_button_retrofit_download -> getString(R.string.retrofit_file_download)
-        else -> throw IllegalArgumentException("Invalid file option selected.")
+        else -> throw IllegalArgumentException(getString(R.string.file_path_error))
     }
 
     private fun getFileName(checkedRadioButtonId: Int) = when (checkedRadioButtonId) {
         R.id.radio_button_glide_download -> getString(R.string.radio_button_glide_download_text)
         R.id.radio_button_udacity_download -> getString(R.string.radio_button_udacity_download_text)
         R.id.radio_button_retrofit_download -> getString(R.string.radio_button_retrofit_download_text)
-        else -> throw IllegalArgumentException("Unable to get file name.")
+        else -> throw IllegalArgumentException(getString(R.string.file_name_error))
     }
 
     private fun getTitle(checkedRadioButtonId: Int) = when (checkedRadioButtonId) {
         R.id.radio_button_glide_download -> getString(R.string.download_title_glide_file)
         R.id.radio_button_udacity_download -> getString(R.string.download_title_loadapp_file)
         R.id.radio_button_retrofit_download -> getString(R.string.download_title_retrofit_file)
-        else -> throw IllegalArgumentException("Unable to get title name.")
+        else -> throw IllegalArgumentException(getString(R.string.download_manager_title_error))
     }
 
     companion object {
-        private const val CHANNEL_ID = "download_file_channel_id"
         private const val NOTIFICATION_ID = 1
     }
 }
